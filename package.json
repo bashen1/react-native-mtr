@@ -1,0 +1,31 @@
+{
+  "name": "react-native-mtr",
+  "version": "0.1.0",
+  "description": "react native ping traceroute module",
+  "main": "src/index.js",
+  "scripts": {
+   "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react-native",
+    "ios",
+    "android",
+    "ping",
+    "traceroute",
+    "mtr"
+  ],
+  "repository": "https://github.com/bashen1/react-native-mtr",
+  "author": "bashen1 <maochunjie@gmail.com> (https://github.com/bashen1)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bashen1/react-native-mtr/issues"
+  },
+  "homepage": "https://github.com/bashen1/react-native-mtr#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  }
+}
