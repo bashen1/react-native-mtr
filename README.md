@@ -1,26 +1,41 @@
 # react-native-mtr
 
-react native ping traceroute module
+[![npm version](https://badge.fury.io/js/react-native-mtr.svg)](https://badge.fury.io/js/react-native-mtr)
 
-## Installation
+此项目基于[LDNetDiagnoService_IOS](https://github.com/Lede-Inc/LDNetDiagnoService_IOS)，
+
+## 安装
 
 ```sh
 npm install react-native-mtr
 ```
 
-## Usage
+## 使用
 
 ```js
-import Mtr from "react-native-mtr";
+import MtrModule from 'react-native-mtr';
 
-// ...
+//开始诊断
+MtrModule.startNetDiagnosis({
+  theAppCode: '', //应用Code(可选，可为空)
+  appName: '', //应用名称(可选，可为空)
+  appVersion: '', //App版本(可选，可为空)
+  userID: '', //用户ID（邮箱）(可选，可为空)
+  dormain: '', //测试域名，必填
+})
 
-const result = await Mtr.multiply(3, 7);
+//停止诊断
+MtrModule.stopNetDiagnosis();
+
+//添加监听
+MtrModule.addListener(() => {});
+
+//移除监听
+MtrModule.removeListener();
+
+//是否诊断中
+MtrModule.isRunningSync();
 ```
-
-## Contributing
-
-See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
 
 ## License
 
