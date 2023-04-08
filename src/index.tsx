@@ -25,10 +25,6 @@ interface Params {
 
 type MtrType = {
   /**
-   * 初始化
-   */
-  initService(): void;
-  /**
    * 开始诊断
    * @param param 
    */
@@ -58,13 +54,6 @@ const {Mtr} = NativeModules;
 
 class MtrModule {
   static listener: any; //网络监听
-  /**
-   * 初始化
-   */
-  static initService = () => {
-    Mtr.initService();
-  }
-
   /**
    * 开始诊断
    * @param param 
