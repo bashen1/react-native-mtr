@@ -55,7 +55,10 @@ static const int TRACEROUTE_TIMEOUT = 5000000;
 /**
  * 停止traceroute
  */
-- (void)stopTrace;
-- (bool)isRunning;
+//- (void)stopTrace;
+//- (bool)isRunning;
+
+- (BOOL)isRunning;
+- (void)setIsRunning:(BOOL)allowed;
 
 @end

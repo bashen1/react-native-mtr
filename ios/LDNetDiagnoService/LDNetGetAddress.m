@@ -335,81 +335,43 @@
  */
 + (NETWORK_TYPE)getNetworkTypeFromStatusBar
 {
-     NETWORK_TYPE nettype = NETWORK_TYPE_NONE;
-     //iOS11
-     if ([[[UIApplication sharedApplication] valueForKeyPath:@"_statusBar"] isKindOfClass:NSClassFromString(@"UIStatusBar_Modern")]) {
-         NSArray *views = [[[[[UIApplication sharedApplication] valueForKeyPath:@"statusBar"] valueForKeyPath:@"statusBar"] valueForKeyPath:@"foregroundView"] subviews];
-         for (UIView *view in views) {
-             for (id child in view.subviews) {
-                 //wifi
-                 if ([child isKindOfClass:NSClassFromString(@"_UIStatusBarWifiSignalView")]) {
-                     nettype = NETWORK_TYPE_WIFI;
-                 }
-                 //2G 3G 4G
-                 if ([child isKindOfClass:NSClassFromString(@"_UIStatusBarStringView")]) {
-                     if ([[child valueForKey:@"_originalText"] containsString:@"2G"]) {
-                         nettype = NETWORK_TYPE_2G;
-                     } else if ([[child valueForKey:@"_originalText"] containsString:@"3G"]) {
-                         nettype = NETWORK_TYPE_3G;
-                     } else if ([[child valueForKey:@"_originalText"] containsString:@"4G"]) {
-                         nettype = NETWORK_TYPE_4G;
-                     }
-                 }
-             }
-         }
-     } else {
-         if (@available(iOS 13.0, *)) {
-             UIStatusBarManager *statusBarManager = [UIApplication sharedApplication].keyWindow.windowScene.statusBarManager;
-             id _statusBar = nil;
-             if ([statusBarManager respondsToSelector:@selector(createLocalStatusBar)]) {
-                 UIView *_localStatusBar = [statusBarManager performSelector:@selector(createLocalStatusBar)];
-                 if ([_localStatusBar respondsToSelector:@selector(statusBar)]) {
-                     _statusBar = [_localStatusBar performSelector:@selector(statusBar)];
-                     if (_statusBar) {
-                         // _UIStatusBarDataCellularEntry
-                         id currentData = [[_statusBar valueForKeyPath:@"_statusBar"] valueForKeyPath:@"currentData"];
-                         id _wifiEntry = [currentData valueForKeyPath:@"wifiEntry"];
-                         id _cellularEntry = [currentData valueForKeyPath:@"cellularEntry"];
-                         if (_wifiEntry && [[_wifiEntry valueForKeyPath:@"isEnabled"] boolValue]) {
-                             // If wifiEntry is enabled, is WiFi.
-                             nettype = NETWORK_TYPE_WIFI;
-                         } else if (_cellularEntry && [[_cellularEntry valueForKeyPath:@"isEnabled"] boolValue]) {
-                             NSNumber *type = [_cellularEntry valueForKeyPath:@"type"];
-                             if (type) {
-                                 switch (type.integerValue) {
-                                     case 5:
-                                         nettype = NETWORK_TYPE_4G;
-                                         break;
-                                     case 4:
-                                         nettype = NETWORK_TYPE_3G;
-                                         break;
-                                     case 0:
-                                         nettype = NETWORK_TYPE_NONE;
-                                     default:
-                                         nettype = NETWORK_TYPE_WIFI;
-                                         break;
-                                 }
-                             }
-                         }
-                     }
-                 }
-             }
-         } else {
-             NSArray *subviews = [[[[UIApplication sharedApplication] valueForKey:@"statusBar"]
-                                   valueForKey:@"foregroundView"] subviews];
-             NSNumber *dataNetworkItemView = nil;
-             for (id subview in subviews) {
-                 if ([subview isKindOfClass:[NSClassFromString(@"UIStatusBarDataNetworkItemView") class]]) {
-                     dataNetworkItemView = subview;
-                     break;
-                 }
-             }
-             NSNumber *num = [dataNetworkItemView valueForKey:@"dataNetworkType"];
-             nettype = [num intValue];
-         }
-     }
-     
-    return nettype;
+    UIApplication *app = [UIApplication sharedApplication];
+    NETWORK_TYPE nettype = NETWORK_TYPE_NONE;
+    //iOS11
+    if ([[app valueForKeyPath:@"_statusBar"] isKindOfClass:NSClassFromString(@"UIStatusBar_Modern")]) {
+        NSArray *views = [[[[app valueForKeyPath:@"statusBar"] valueForKeyPath:@"statusBar"] valueForKeyPath:@"foregroundView"] subviews];
+        for (UIView *view in views) {
+            for (id child in view.subviews) {
+                //wifi
+                if ([child isKindOfClass:NSClassFromString(@"_UIStatusBarWifiSignalView")]) {
+                    nettype = NETWORK_TYPE_WIFI;
+                }
+                //2G 3G 4G
+                if ([child isKindOfClass:NSClassFromString(@"_UIStatusBarStringView")]) {
+                    if ([[child valueForKey:@"_originalText"] containsString:@"2G"]) {
+                        nettype = NETWORK_TYPE_2G;
+                    } else if ([[child valueForKey:@"_originalText"] containsString:@"3G"]) {
+                        nettype = NETWORK_TYPE_3G;
+                    } else if ([[child valueForKey:@"_originalText"] containsString:@"4G"]) {
+                        nettype = NETWORK_TYPE_4G;
+                    }
+                }
+            }
+        }
+    } else {
+        NSArray *subviews = [[[[UIApplication sharedApplication] valueForKey:@"statusBar"]
+                              valueForKey:@"foregroundView"] subviews];
+        NSNumber *dataNetworkItemView = nil;
+        for (id subview in subviews) {
+            if ([subview isKindOfClass:[NSClassFromString(@"UIStatusBarDataNetworkItemView") class]]) {
+                dataNetworkItemView = subview;
+                break;
+            }
+        }
+        NSNumber *num = [dataNetworkItemView valueForKey:@"dataNetworkType"];
+        nettype = [num intValue];
+    }
+   return nettype;
 }
 
 

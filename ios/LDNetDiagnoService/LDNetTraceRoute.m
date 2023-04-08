@@ -13,8 +13,10 @@
 #import "LDNetTraceRoute.h"
 #import "LDNetTimer.h"
 #import "LDNetGetAddress.h"
-
+#import <libkern/OSAtomic.h>
 @implementation LDNetTraceRoute
+
+volatile uint32_t _IsRunning;
 
 /**
  * 初始化
@@ -30,6 +32,7 @@
         udpPort = port;
         readTimeout = timeout;
         maxAttempts = attempts;
+//        running = @"running";
     }
 
     return self;
@@ -84,7 +87,7 @@
     int send_sock;
     Boolean error = false;
 
-    isrunning = true;
+//    isrunning = true;
     //创建一个支持ICMP协议的UDP网络套接口（用于接收）
     
     if ((recv_sock = socket(destination->sa_family, SOCK_DGRAM, isIPV6?IPPROTO_ICMPV6:IPPROTO_ICMP)) < 0) {
@@ -190,14 +193,21 @@
             }
 
             // On teste si l'utilisateur a demandé l'arrêt du traceroute
-            @synchronized(running)
-            {
-                if (!isrunning) {
-                    ttl = maxTTL;
-                    // On force le statut d'icmp pour ne pas générer un Hop en sortie de boucle;
-                    icmp = true;
-                    break;
-                }
+//            @synchronized(running)
+//            {
+//                if (!isrunning) {
+//                    ttl = maxTTL;
+//                    // On force le statut d'icmp pour ne pas générer un Hop en sortie de boucle;
+//                    icmp = true;
+//                    break;
+//                }
+//            }
+            
+            if (![self isRunning]) {
+                ttl = maxTTL;
+                // On force le statut d'icmp pour ne pas générer un Hop en sortie de boucle;
+                icmp = true;
+                break;
             }
         }
 
@@ -228,20 +238,33 @@
 /**
  * 停止traceroute
  */
-- (void)stopTrace
-{
-    @synchronized(running)
-    {
-        isrunning = false;
-    }
-}
+//- (void)stopTrace
+//{
+//    @synchronized(running)
+//    {
+//        isrunning = false;
+//    }
+//}
 
 
 /**
  * 检测traceroute是否在运行
  */
-- (bool)isRunning
-{
-    return isrunning;
+//- (bool)isRunning
+//{
+//    return isrunning;
+//}
+
+- (BOOL)isRunning {
+    return _IsRunning != 0;
 }
+
+- (void)setIsRunning:(BOOL)allowed {
+    if (allowed) {
+        OSAtomicOr32Barrier(1, & _IsRunning); //Atomic bitwise OR of two 32-bit values with barrier
+    } else {
+        OSAtomicAnd32Barrier(0, & _IsRunning); //Atomic bitwise AND of two 32-bit values with barrier.
+    }
+}
+
 @end

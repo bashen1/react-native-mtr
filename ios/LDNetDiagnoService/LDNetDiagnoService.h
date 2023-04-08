@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+NS_ASSUME_NONNULL_BEGIN
+typedef void(^LDNetDiagnoServiceDidEndBlock)(NSString *allLogInfo);
 
 /**
  * @protocol 监控网络诊断的过程信息
@@ -45,20 +47,21 @@
     id<LDNetDiagnoServiceDelegate> delegate;      //向调用者输出诊断信息接口
 @property (nonatomic, retain) NSString *dormain;  //接口域名
 
-/**
- * 初始化网络诊断服务
- * theAppCode,theUID, theDormain为必填项
- */
-- (id)initWithAppCode:(NSString *)theAppCode
-              appName:(NSString *)theAppName
-           appVersion:(NSString *)theAppVersion
-               userID:(NSString *)theUID
-             deviceID:(NSString *)theDeviceID
-              dormain:(NSString *)theDormain
-          carrierName:(NSString *)theCarrierName
-       ISOCountryCode:(NSString *)theISOCountryCode
-    MobileCountryCode:(NSString *)theMobileCountryCode
-        MobileNetCode:(NSString *)theMobileNetCode;
+/// 域名列表
+@property (nonatomic, strong) NSMutableArray<NSString *> *domainList;
+
+
+/// 初始化网络诊断服务
+/// @param appName app 名称
+/// @param appVersion app 版本
+/// @param userId 用户 ID
+/// @param domainList 域名列表
+- (instancetype)initWithAppName:(nonnull NSString *)appName
+                     appVersion:(nonnull NSString *)appVersion
+                         userId:(nonnull NSString *)userId
+                     domainList:(nonnull NSMutableArray <NSString *> *)domainList
+                     didEndBlock:(LDNetDiagnoServiceDidEndBlock)didEndBlock;
+
 
 
 /**
@@ -74,8 +77,13 @@
 
 
 /**
+ 停止诊断网络并返回所有的 log
+ */
+- (NSString *)stopNetDialogsisAndReturnTotalLog;
+
+/**
  * 打印整体loginInfo；
  */
 - (void)printLogInfo;
-
+NS_ASSUME_NONNULL_END
 @end
